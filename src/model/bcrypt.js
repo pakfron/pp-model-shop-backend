@@ -1,0 +1,2 @@
+exports.bcrypt = require('bcrypt')
+

@@ -1,0 +1,103 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int       @id @default(autoincrement())
+  username String    @unique
+  password String
+  email    String    @unique
+  role     Role      @default(user)
+  Address  Address[]
+  order    order[]
+  Cart     Cart[]
+}
+
+enum Role {
+  admin
+  user
+}
+
+model Address {
+  id        Int     @id @default(autoincrement())
+  firstName String
+  lastName  String
+  address   String
+  phone     Int
+  User      User    @relation(fields: [userId], references: [id])
+  userId    Int
+  order     order[]
+}
+
+model Product {
+  id           Int            @id @default(autoincrement())
+  name         String
+  series       String
+  detail       String
+  price        Decimal @db.Decimal(10,2)
+  stock        Int
+  Type         Type
+  ImageProduct ImageProduct[]
+  orderItem    orderItem[]
+  Cart         Cart[]
+}
+
+enum Type {
+  Nendoroid
+  Figma
+  Figure
+}
+
+model ImageProduct {
+  id        Int     @id @default(autoincrement())
+  imageUrl  String
+  Product   Product @relation(fields: [productId], references: [id])
+  productId Int
+}
+
+model order {
+  id          Int         @id @default(autoincrement())
+  totalPrice  Decimal @db.Decimal(10,2)
+  qrImageUrl  String
+  slip        String?
+  dateTime    DateTime?
+  OrderStatus OrderStatus
+  User        User        @relation(fields: [userId], references: [id])
+  userId      Int
+  Address     Address     @relation(fields: [addressId], references: [id])
+  addressId   Int
+  orderItem   orderItem[]
+}
+
+enum OrderStatus {
+  Pending
+  Success
+}
+
+model orderItem {
+  id         Int     @id @default(autoincrement())
+  quantity   Int
+  totalPrice Decimal @db.Decimal(10,2)
+  Product    Product @relation(fields: [productId], references: [id])
+  productId  Int
+  order      order   @relation(fields: [orderId], references: [id])
+  orderId    Int
+}
+
+model Cart {
+  id         Int     @id
+  totalPrice Decimal @db.Decimal(10,2)
+  quantity   Int
+  User       User    @relation(fields: [userId], references: [id])
+  Product    Product @relation(fields: [productId], references: [id])
+  userId     Int
+  productId  Int
+}
