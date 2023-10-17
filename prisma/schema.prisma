@@ -41,12 +41,12 @@ model Product {
   id           Int            @id @default(autoincrement())
   name         String
   series       String
-  detail       String
+  detail       String   @db.LongText
   price        Decimal @db.Decimal(10,2)
   stock        Int
   Type         Type
-  ImageProduct ImageProduct[]
-  orderItem    orderItem[]
+  imageproduct ImageProduct[]
+  orderItem    OrderItem[]
   Cart         Cart[]
 }
 
@@ -59,7 +59,7 @@ enum Type {
 model ImageProduct {
   id        Int     @id @default(autoincrement())
   imageUrl  String
-  Product   Product @relation(fields: [productId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
   productId Int
 }
 
@@ -74,7 +74,7 @@ model order {
   userId      Int
   Address     Address     @relation(fields: [addressId], references: [id])
   addressId   Int
-  orderItem   orderItem[]
+  orderItem   OrderItem[]
 }
 
 enum OrderStatus {
@@ -82,11 +82,11 @@ enum OrderStatus {
   Success
 }
 
-model orderItem {
+model OrderItem {
   id         Int     @id @default(autoincrement())
   quantity   Int
   totalPrice Decimal @db.Decimal(10,2)
-  Product    Product @relation(fields: [productId], references: [id])
+  product    Product @relation(fields: [productId], references: [id])
   productId  Int
   order      order   @relation(fields: [orderId], references: [id])
   orderId    Int
@@ -97,7 +97,7 @@ model Cart {
   totalPrice Decimal @db.Decimal(10,2)
   quantity   Int
   User       User    @relation(fields: [userId], references: [id])
-  Product    Product @relation(fields: [productId], references: [id])
+  product    Product @relation(fields: [productId], references: [id])
   userId     Int
   productId  Int
 }
