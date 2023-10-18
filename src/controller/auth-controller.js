@@ -121,6 +121,7 @@ exports.loginController = async (req, res, next) => {
 
 exports.meController = (req, res, next) => {
   try {
+    
     delete req.user.password;
     delete req.user.role;
     res.status(200).json({ user: req.user });

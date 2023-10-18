@@ -93,7 +93,7 @@ model OrderItem {
 }
 
 model Cart {
-  id         Int     @id
+  id         Int     @id @default(autoincrement())
   totalPrice Decimal @db.Decimal(10,2)
   quantity   Int
   User       User    @relation(fields: [userId], references: [id])
