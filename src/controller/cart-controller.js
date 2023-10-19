@@ -128,3 +128,20 @@ exports.delCart = async (req,res,next)=>{
         next(error)
     }
 }
+
+exports.deleteAllCart = async (req,res,next) =>{
+try {
+  const {id}= req.user
+    await prisma.cart.deleteMany({
+      where:{
+        userId:id
+
+      }
+    })
+
+   res.status(200).json({msg:"Delete All Cart Complete"})
+} catch (error) {
+  next(error)
+}
+
+}

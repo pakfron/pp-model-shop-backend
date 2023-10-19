@@ -121,9 +121,49 @@ exports.loginController = async (req, res, next) => {
 
 exports.meController = (req, res, next) => {
   try {
-    
     delete req.user.password;
     delete req.user.role;
     res.status(200).json({ user: req.user });
-  } catch (error) {}
+  } catch (error) {
+    next(error);
+  }
 };
+
+exports.addAddress = async (req, res, next) => {
+  try {
+    const {
+      user: { id },
+      body: { firstName, lastName, address, phone },
+    } = req;
+
+    const addAddress = await prisma.address.create({
+      data: {
+        firstName,
+        lastName,
+        address,
+        phone,
+        userId: id,
+      },
+    });
+
+    res.status(200).json({ addAddress });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getAddress = async (req,res,next)=>{
+  try {
+    const {user:{id}} = req
+
+    const address = await prisma.address.findFirst({
+      where:{
+        userId:id
+      }
+    })
+
+    res.status(200).json({address})
+  } catch (error) {
+    next(error)
+  }
+}
