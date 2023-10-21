@@ -1,5 +1,6 @@
 const express = require("express");
 const prisma = require("../model/prisma");
+const { upload } = require("../utilis/cloundinary-service");
 const app = express();
 
 exports.createOrder = async(req,res,next)=>{
@@ -50,9 +51,50 @@ exports.createOrder = async(req,res,next)=>{
         console.log(pushOrderItems)
 
         
-        res.status(201).json({msg:cartItem})
+        res.status(201).json({orders})
     } catch (error) {
         next(error)
         
     }
 }
+
+exports.uploadImageSlip = async (req, res, next) => {
+    try {
+        const {body:{orderId},files}=req
+       
+    console.log(orderId)
+    const imgUrl = await upload(files.image[0].path);
+        console.log(imgUrl)
+
+
+       const checkOrder = await prisma.order.update({
+        where:{
+            id:+orderId
+        },
+        data:{slip:imgUrl,
+            dateTime:{set:new Date()}
+        }
+       })
+    //    console.log(checkOrder)
+    //     console.log(req.files)
+    //   console.log(imgUrl);
+      res.status(201).json({checkOrder});
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  exports.getOrder = async(req,res,next)=>{
+    try {
+        const {user:{id}} = req
+        const order = await prisma.order.findMany({
+            where:{
+                userId:id
+            }
+        })
+
+        res.status(200).json({order})
+    } catch (error) {
+        next(error)
+    }
+  }
