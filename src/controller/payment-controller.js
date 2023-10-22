@@ -1,7 +1,9 @@
 const express = require("express");
 const prisma = require("../model/prisma");
 const { upload } = require("../utilis/cloundinary-service");
+const { unlink } = require("../route/auth-route");
 const app = express();
+const fs = require('fs/promises')
 
 exports.createOrder = async(req,res,next)=>{
     try {
@@ -66,7 +68,7 @@ exports.uploadImageSlip = async (req, res, next) => {
     const imgUrl = await upload(files.image[0].path);
         console.log(imgUrl)
 
-
+        
        const checkOrder = await prisma.order.update({
         where:{
             id:+orderId
@@ -75,12 +77,16 @@ exports.uploadImageSlip = async (req, res, next) => {
             dateTime:{set:new Date()}
         }
        })
-    //    console.log(checkOrder)
-    //     console.log(req.files)
-    //   console.log(imgUrl);
+
+      
+
       res.status(201).json({checkOrder});
     } catch (error) {
       next(error);
+    } finally {
+        if(req.files.image[0].path){
+            fs.unlink(req.files.image[0].path)
+        }
     }
   };
 

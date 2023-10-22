@@ -41,11 +41,9 @@ exports.addCart = async (req, res, next) => {
             id:checkCart.id
         }
     })
-       return res.status(200).json({checkCart})
+       return res.status(201).json({checkCart})
     }
-    if (!checkUser) {
-      return res.status(401).json({ msg: "who are you" });
-    }
+    
 
     const product = await prisma.product.findFirst({
       where: {
@@ -68,7 +66,7 @@ exports.addCart = async (req, res, next) => {
       },
     });
 
-    res.status(200).json({ pushCart });
+    res.status(201).json({ pushCart });
   } catch (error) {
     next(error);
   }

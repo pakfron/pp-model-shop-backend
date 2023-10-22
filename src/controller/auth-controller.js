@@ -77,7 +77,7 @@ exports.registerController = async (req, res, next) => {
     delete user.password;
     delete user.role;
 
-    res.status(200).json({ accessToken, user });
+    res.status(201).json({ accessToken, user });
   } catch (error) {
     next(error);
   }
@@ -121,8 +121,12 @@ exports.loginController = async (req, res, next) => {
 
 exports.meController = (req, res, next) => {
   try {
+
+    if(req.user.role==="user"){
+      delete req.user.role;
+
+    }
     delete req.user.password;
-    delete req.user.role;
     res.status(200).json({ user: req.user });
   } catch (error) {
     next(error);
@@ -146,24 +150,82 @@ exports.addAddress = async (req, res, next) => {
       },
     });
 
-    res.status(200).json({ addAddress });
+    res.status(201).json({ addAddress });
   } catch (error) {
     next(error);
   }
 };
 
-exports.getAddress = async (req,res,next)=>{
+exports.getAddress = async (req, res, next) => {
   try {
-    const {user:{id}} = req
+    const {
+      user: { id },
+    } = req;
 
     const address = await prisma.address.findFirst({
-      where:{
-        userId:id
-      }
-    })
+      where: {
+        userId: id,
+      },
+    });
 
-    res.status(200).json({address})
+    res.status(200).json({ address });
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
+
+exports.editAddress = async (req, res, next) => {
+  try {
+    const {
+      user: { id },
+      body: { firstName, lastName, address, phone },
+    } = req;
+    let patchAddress = {};
+    const addressOfUser = await prisma.address.findFirst({
+      where: {
+        userId: id,
+      }
+     
+    });
+
+    if (
+      addressOfUser.firstName === firstName &&
+      addressOfUser.lastName === lastName &&
+      addressOfUser.address === address &&
+      addressOfUser.phone === phone
+    ) {
+      return res.status(400).json({ msg: "address already exists" });
+    }
+
+    if (addressOfUser.firstName !== firstName) {
+      patchAddress["firstName"] = firstName
+    }
+
+    if (addressOfUser.lastName !== lastName) {
+       patchAddress["lastName"] =lastName
+    }
+
+    if (addressOfUser.address !== address) {
+      patchAddress["address"] = address
+    }
+    if (addressOfUser.phone !== phone) {
+      patchAddress["phone"] = phone
+    }
+    console.log(patchAddress)
+    const newAddress = await prisma.address.update({
+      data:patchAddress,
+      
+      where:{
+       id:addressOfUser.id
+      },
+     
+      
+    })
+    
+
+    res.status(200).json({ newAddress });
+  } catch (error) {
+    console.log(error)
+    next(error);
+  }
+};

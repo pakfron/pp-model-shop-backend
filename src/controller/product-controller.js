@@ -11,7 +11,7 @@ exports.createProduct = async (req, res, next) => {
       data: { name, series, detail, price, stock, Type },
     });
     console.log(result);
-    res.status(200).json({ message: "create complete" });
+    res.status(201).json({ message: "create complete" });
   } catch (error) {
     next(error);
   }
@@ -21,7 +21,7 @@ exports.uploadImageProduct = async (req, res, next) => {
   try {
     const imgUrl = await upload(req.file.path);
     console.log(imgUrl);
-    res.status(200).json({ message: "test upload image" });
+    res.status(201).json({ message: "test upload image" });
   } catch (error) {
     next(error);
   }
@@ -48,7 +48,7 @@ exports.createUrlImageHardCode = async (req, res, next) => {
       },
     });
 
-    res.status(200).json({ img });
+    res.status(201).json({ img });
   } catch (error) {
     next(error);
   }
