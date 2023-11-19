@@ -6,7 +6,7 @@ exports.registerSchema = Joi.object({
     .pattern(/^[a-zA-Z0-9]{3,20}$/)
     .required(),
   password: Joi.string()
-    .pattern(/^[a-zA-Z0-9*/]{3,20}$/)
+    .pattern(/^[a-zA-Z0-9]{3,20}$/)
     .trim()
     .required(),
   confirmPassword: Joi.string().valid(Joi.ref("password")).trim().strip(),

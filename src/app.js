@@ -1,18 +1,21 @@
 require('dotenv').config()
 const express = require('express')
 const app = express()
+const morgan = require('morgan')
 const cors = require('cors')
+
 const authRoute = require('./route/auth-route')
 const productRoute = require('./route/product-route')
 const cartRoute = require('./route/cart-route')
 const paymentRoute = require('./route/payment-route')
 const { pathNotFound } = require('./middlewares/not-found')
 const middlewareError = require('./middlewares/error')
-
+const rateLimitMiddleware = require('./middlewares/rate-limit')
 
 app.use(express.json())
-
 app.use(cors())
+app.use(morgan('dev'))
+// app.use(rateLimitMiddleware)
 app.use('/auth',authRoute)
 app.use('/cart',cartRoute)
 app.use('/product',productRoute)

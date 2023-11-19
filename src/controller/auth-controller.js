@@ -99,9 +99,7 @@ exports.loginController = async (req, res, next) => {
     if (!checkPassword) {
       return next(createError("Invalid Username or Password", 401));
     }
-    delete user.password;
-    delete user.role;
-
+ 
     const payload = { userId: user.id };
     const JWT_SECRET_KEY =
       process.env.JWT_SECRET_KEY || "ajsdflhasdifljsDfhasoaifj;fj;ds";
@@ -110,6 +108,11 @@ exports.loginController = async (req, res, next) => {
       expiresIn: JWT_EXPIRE,
     });
 
+    if(user.role==='admin'){
+      delete user.password
+
+      res.status(201).json({accessToken,user})
+    }
     delete user.password;
     delete user.role;
 

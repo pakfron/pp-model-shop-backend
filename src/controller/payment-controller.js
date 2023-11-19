@@ -63,7 +63,7 @@ exports.createOrder = async(req,res,next)=>{
 exports.uploadImageSlip = async (req, res, next) => {
     try {
         const {body:{orderId},files}=req
-       
+
     console.log(orderId)
     const imgUrl = await upload(files.image[0].path);
         console.log(imgUrl)
@@ -104,3 +104,80 @@ exports.uploadImageSlip = async (req, res, next) => {
         next(error)
     }
   }
+
+  exports.getOrderAdmin = async(req,res,next)=>{
+    try {
+        
+        // const {user:{id}} = req
+        // const admin = await prisma.user.findUnique({
+        //     where:{
+        //         id:id
+        //     }
+        //     ,
+        //     select:{
+        //         role:true
+        //     }
+        // })
+        // if( admin.role !== 'admin'){
+        //     return res.status(401).json({msg:"You not Permission"})
+        // }
+
+        const order = await prisma.order.findMany({})
+        
+
+
+        res.status(200).json({order})
+
+    } catch (error) {
+        next(error)
+    }
+  }
+
+  exports.chageStatusOrder = async (req,res,next)=>{
+try {
+    
+    const {orderId}= req.body
+console.log(req.body)
+    const order = await prisma.order.findFirst({
+        where:{
+            id:orderId
+        }
+    })
+
+    if(order.OrderStatus==="Pending"){
+        const chageOrderStatus = await prisma.order.updateMany({
+            data:{
+                OrderStatus:"Success"
+            }
+            ,
+            where:{
+                id:orderId
+            }
+            
+        })
+      return  res.status(201).json({chageOrderStatus})
+
+    }
+console.log(orderId)
+ 
+    const chageOrderStatus = await prisma.order.updateMany({
+        data:{
+            OrderStatus:"Pending"
+        }
+        ,
+        where:{
+            id:orderId
+        }
+        
+    })
+
+    
+    res.status(201).json({chageOrderStatus})
+    
+} catch (error) {
+    console.log(error)
+}
+
+  }
+
+  
