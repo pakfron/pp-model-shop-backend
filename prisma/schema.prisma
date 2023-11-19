@@ -45,6 +45,7 @@ model Product {
   price        Decimal        @db.Decimal(10, 2)
   stock        Int
   Type         Type
+  status       Boolean      @default(true)
   imageproduct ImageProduct[]
   orderItem    OrderItem[]
   Cart         Cart[]

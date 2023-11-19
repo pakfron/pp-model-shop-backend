@@ -99,7 +99,7 @@ exports.loginController = async (req, res, next) => {
     if (!checkPassword) {
       return next(createError("Invalid Username or Password", 401));
     }
- 
+
     const payload = { userId: user.id };
     const JWT_SECRET_KEY =
       process.env.JWT_SECRET_KEY || "ajsdflhasdifljsDfhasoaifj;fj;ds";
@@ -108,10 +108,10 @@ exports.loginController = async (req, res, next) => {
       expiresIn: JWT_EXPIRE,
     });
 
-    if(user.role==='admin'){
-      delete user.password
+    if (user.role === "admin") {
+      delete user.password;
 
-      res.status(201).json({accessToken,user})
+      res.status(201).json({ accessToken, user });
     }
     delete user.password;
     delete user.role;
@@ -124,11 +124,6 @@ exports.loginController = async (req, res, next) => {
 
 exports.meController = (req, res, next) => {
   try {
-
-    if(req.user.role==="user"){
-      delete req.user.role;
-
-    }
     delete req.user.password;
     res.status(200).json({ user: req.user });
   } catch (error) {
@@ -187,8 +182,7 @@ exports.editAddress = async (req, res, next) => {
     const addressOfUser = await prisma.address.findFirst({
       where: {
         userId: id,
-      }
-     
+      },
     });
 
     if (
@@ -201,34 +195,31 @@ exports.editAddress = async (req, res, next) => {
     }
 
     if (addressOfUser.firstName !== firstName) {
-      patchAddress["firstName"] = firstName
+      patchAddress["firstName"] = firstName;
     }
 
     if (addressOfUser.lastName !== lastName) {
-       patchAddress["lastName"] =lastName
+      patchAddress["lastName"] = lastName;
     }
 
     if (addressOfUser.address !== address) {
-      patchAddress["address"] = address
+      patchAddress["address"] = address;
     }
     if (addressOfUser.phone !== phone) {
-      patchAddress["phone"] = phone
+      patchAddress["phone"] = phone;
     }
-    console.log(patchAddress)
+    console.log(patchAddress);
     const newAddress = await prisma.address.update({
-      data:patchAddress,
-      
-      where:{
-       id:addressOfUser.id
+      data: patchAddress,
+
+      where: {
+        id: addressOfUser.id,
       },
-     
-      
-    })
-    
+    });
 
     res.status(200).json({ newAddress });
   } catch (error) {
-    console.log(error)
+    console.log(error);
     next(error);
   }
 };

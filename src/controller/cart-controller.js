@@ -7,7 +7,7 @@ const app = express();
 exports.addCart = async (req, res, next) => {
   try {
     const {id} = req.user
-
+   
     const { quantity, productId } = req.body;
 
     const checkUser = await prisma.user.findUnique({
@@ -39,19 +39,18 @@ exports.addCart = async (req, res, next) => {
         },
         where:{
             id:checkCart.id
+        },
+        include:{
+          product:true
         }
     })
-       return res.status(201).json({checkCart})
+       return res.status(201).json({checkCart,pushCart})
     }
     
 
     const product = await prisma.product.findFirst({
       where: {
         id: productId,
-      },
-      select: {
-        id: true,
-        price: true,
       },
     });
 
@@ -63,10 +62,10 @@ exports.addCart = async (req, res, next) => {
         productId,
         quantity,
         totalPrice: sumPrice,
-      },
+      }
     });
 
-    res.status(201).json({ pushCart });
+    res.status(201).json({ pushCart,product });
   } catch (error) {
     next(error);
   }

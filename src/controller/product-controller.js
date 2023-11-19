@@ -25,6 +25,7 @@ exports.createProduct = async (req, res, next) => {
 
     res.status(201).json({ message: "create complete" });
   } catch (error) {
+    console.log(error)
     next(error);
   }
 };
@@ -78,7 +79,7 @@ exports.getProduct = async (req, res, next) => {
         }
       }
     });
-     console.log(products)
+    //  console.log(products)
     res.status(200).json({ products });
   } catch (error) {
     console.log(error)
@@ -100,19 +101,47 @@ exports.delelteProduct= async(req,res,next)=>{
      return res.status(403).json({msg:"Don't Have Permission"})
     }
 
-    const deleteImg = await prisma.imageProduct.deleteMany({
+    const product = await prisma.product.findMany({
       where:{
-        productId:+productId
+        id:+productId
       }
     })
 
-  const deleteProduct= await prisma.product.deleteMany({
-    where:{
-      id:+productId
-    }
-  })
+    if(product[0].status===true){
+      const chageStatusFalse  = await prisma.product.updateMany({
+        data:{status:false}
+        ,
+        where:{
+          id:+productId
+        }
 
-    res.status(200).json({msg:"delete complete"})
+      })
+      return res.status(200).json({chageStatusFalse})
+    }
+    if(product[0].status===false){
+      const chageStatusTrue  = await prisma.product.updateMany({
+        data:{status:true}
+        ,
+        where:{
+          id:+productId
+        }
+
+      })
+      return res.status(200).json({chageStatusTrue})
+    }
+  //   const deleteImg = await prisma.imageProduct.deleteMany({
+  //     where:{
+  //       productId:+productId
+  //     }
+  //   })
+
+  // const deleteProduct= await prisma.product.deleteMany({
+  //   where:{
+  //     id:+productId
+  //   }
+  // })
+
+    res.status(200).json({product})
   } catch (error) {
     next(error)
   }
@@ -123,30 +152,42 @@ exports.updateProduct = async (req,res,next)=>{
     const { body:{name, series, detail, price,Type },file:{path},params:{productId}} = req;
     
     // console.log(req.file)
-    const product = await prisma.product.updateMany({
-      data: { name, series, detail, price, stock:99, Type },
-      where:{
-        id:+productId
-      }
-    });
+  //   const product = await prisma.product.updateMany({
+  //     data: { name, series, detail, price, stock:99, Type },
+  //     where:{
+  //       id:+productId
+  //     }
+  //   });
 
-    console.log(product)
-    const imageUrl = await upload(path);
-  // console.log(imageUrl)    
-    const img = await prisma.imageProduct.updateMany({
-      data: {
+  //   console.log(product)
+  //   const imageUrl = await upload(path);
+  // // console.log(imageUrl)    
+  //   const img = await prisma.imageProduct.updateMany({
+  //     data: {
        
-        imageUrl
-      },
-      where:{
-        productId:product.id
-      }
-    });
+  //       imageUrl
+  //     },
+  //     where:{
+  //       productId:product.id
+  //     }
+  //   });
     
 
     res.status(200).json({msg:"patch complete"})
   } catch (error) {
     console.log(error)
+    next(error)
+  }
+}
+exports.getProductEdit = async (req,res,next)=>{
+  try {
+    const {body:{productId}}=req
+    const productEdit = await prisma.product.findMany({
+      where:{id:productId}
+      ,include:{imageproduct:true}
+    })
+    res.status(200).json({productEdit})
+  } catch (error) {
     next(error)
   }
 }
