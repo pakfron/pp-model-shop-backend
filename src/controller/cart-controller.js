@@ -9,6 +9,7 @@ exports.addCart = async (req, res, next) => {
     const {id} = req.user
    
     const { quantity, productId } = req.body;
+    console.log(quantity,productId)
 
     const checkUser = await prisma.user.findUnique({
       where: {
@@ -67,9 +68,11 @@ exports.addCart = async (req, res, next) => {
 
     res.status(201).json({ pushCart,product });
   } catch (error) {
+    console.log(error)
     next(error);
   }
 };
+
 
 exports.getCart = async (req, res, next) => {
   try {
@@ -141,4 +144,50 @@ try {
   next(error)
 }
 
+}
+
+exports.deleteCartByProduct = async(req,res,next)=>{
+  try {
+    
+    const {user,body:{id,productId,price}}=req
+
+    const cartItem = await prisma.cart.findUnique({
+      where:{
+        id
+      }
+    })
+    if(cartItem.quantity===1){
+      const deleteCart = await prisma.cart.deleteMany({
+        where:{
+          id
+        }
+      })
+      return res.status(200).json({deleteCart})
+    }
+    if(cartItem.quantity!==1){
+      console.log(cartItem.totalPrice)
+      const totalPrice = Number(cartItem.totalPrice) - price
+      const quantity = cartItem.quantity - 1
+
+
+      const newCart = await prisma.cart.updateMany({
+        data:{
+          totalPrice,
+          quantity
+        }
+        ,where:{
+          id
+        }
+      })
+
+      return res.status(200).json({msg:"decrease Product"})
+    }
+
+
+
+    res.status(200).json({cartItem})
+  } catch (error) {
+    console.log(error)
+    next(error)
+  }
 }
