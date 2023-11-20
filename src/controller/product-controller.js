@@ -83,6 +83,7 @@ exports.getProduct = async (req, res, next) => {
           },
         },
       },
+      
     });
     //  console.log(products)
     res.status(200).json({ products });
@@ -218,7 +219,7 @@ exports.updateProduct = async (req, res, next) => {
     console.log(error);
     next(error);
   }finally {
-    if(req.file.path){
+    if(req.file?.path!==undefined){
         fs.unlink(req.file.path)
     }
 }
