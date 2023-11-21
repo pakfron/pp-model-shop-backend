@@ -78,6 +78,15 @@ exports.getCart = async (req, res, next) => {
   try {
 
     const {id} = req.user
+
+    const deleteCartProductOff = await prisma.cart.deleteMany({
+      where:({
+        product:{
+          status:false
+        }
+      })
+    })
+
     const checkCart = await prisma.cart.findMany({
       where: {
         userId: id,
